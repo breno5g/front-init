@@ -4,17 +4,19 @@ const { exec } = require('child_process');
 const fs = require('fs/promises');
 const path = require('path');
 const data = require(path.join(__dirname, 'data.js'));
+const { question } = require('readline-sync');
 
 class App {
   constructor() {
     this.data = data;
+    this.reactAppName = question('Qual o nome da aplicacao react que quer criar? ');
 
     this.init();
   }
 
   async createDirectory() {
     for (let folder of this.data.folders) {
-      await fs.mkdir(folder, { recursive: true });
+      await fs.mkdir(`./${this.reactAppName}/${folder}`, { recursive: true });
     }
   }
 
@@ -31,7 +33,7 @@ class App {
 
       type === 'dev' ? (cleitin += ' -D') : (cleitin += '');
 
-      exec(`npm install ${cleitin}`, (error, stdout, stderr) => {
+      exec(`cd ${this.reactAppName} && npm install ${cleitin}`, (error, stdout, stderr) => {
         if (error) reject(new Error('Error: ', error));
         if (stderr) console.log('Stderr: ', stderr);
         console.log('Dependencies have been installed');
@@ -44,7 +46,7 @@ class App {
 
   createReactApp() {
     const res = new Promise((resolve, reject) => {
-      exec(`npx create-react-app .`, (error, stdout, stderr) => {
+      exec(`npx create-react-app ${this.reactAppName}`, (error, stdout, stderr) => {
         if (error) reject(new Error('Error: ', error));
         if (stderr) console.log('Stderr: ', stderr);
         console.log('React app has been created');
@@ -56,14 +58,14 @@ class App {
   }
 
   async clear() {
-    await fs.rm('./src', { recursive: true });
-    await fs.mkdir('./src');
+    await fs.rm(`./${this.reactAppName}/src`, { recursive: true });
+    await fs.mkdir(`./${this.reactAppName}/src`);
   }
 
   async rebuildSrc() {
     for (let { path, content } of this.data.clear) {
-      console.log(path, content);
-      await fs.writeFile(path, content);
+      console.log(`./${this.reactAppName}/${path}`, content);
+      await fs.writeFile(`./${this.reactAppName}/${path}`, content);
     }
   }
 
