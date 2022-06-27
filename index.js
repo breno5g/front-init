@@ -14,16 +14,6 @@ class App {
     this.init();
   }
 
-  // async enterDirectory() {
-  //   fs.mkdir(this.reactAppName);
-  //   const cd = `cd ${this.reactAppName}`;
-  //   console.log('Antes do cd: ', path.join(__dirname));
-  //   exec(cd, { cwd: path.join(__dirname) }, (error, stdout, stderr) => {
-  //     console.log('Stdout: ', stdout);
-  //   });
-  //   console.log('Depois do cd: ', path.join(__dirname));
-  // }
-
   async createDirectory() {
     for (let folder of this.data.folders) {
       await fs.mkdir(`./${this.reactAppName}/${folder}`, { recursive: true });
